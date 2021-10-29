@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DecorDesign">
         <activity
+            android:name=".homepage.post.PostAddActivity"
+            android:exported="false" />
+        <activity
             android:name=".homepage.HomepageActivity"
             android:exported="false"
             android:label="@string/title_activity_homepage" />
