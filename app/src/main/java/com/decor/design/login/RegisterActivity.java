@@ -121,6 +121,8 @@ public class RegisterActivity extends AppCompatActivity {
                         register.put("gender", radioButton.getText().toString());
                         register.put("uid", uid);
                         register.put("role", role);
+                        register.put("phone", "");
+                        register.put("dp", "");
 
                         FirebaseFirestore
                                 .getInstance()

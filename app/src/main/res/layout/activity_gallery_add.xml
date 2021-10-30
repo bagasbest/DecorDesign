@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".homepage.post.upload_post.PostAddActivity">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".homepage.gallery.GalleryAddActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add New Post"
+            android:text="Add New Gallery"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Upload Design"
+            android:text="Upload Gallery Image"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view5" />
@@ -134,7 +134,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="30dp"
             android:layout_marginEnd="16dp"
-            android:text="Upload Post"
+            android:text="Upload to Gallery"
             android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -142,4 +142,4 @@
             app:layout_constraintTop_toBottomOf="@+id/progressBar" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+</ScrollView>

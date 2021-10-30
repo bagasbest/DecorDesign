@@ -1,51 +1,48 @@
-package com.decor.design.homepage.post;
+package com.decor.design.homepage.gallery;
 
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class PostViewModel extends ViewModel {
+public class GalleryViewModel extends ViewModel {
 
     /// KELAS VIEW MODEL BERFUNGSI UNTUK MENGAMBIL DATA DARI FIRESTORE KEMUDIAN MENERUSKANNYA KEPADA ACTIVITY YANG DI TUJU
-    /// CONTOH KELAS GALLERY VIEW MODEL MENGAMBIL DATA DARI COLLECTION "post", KEMUDIAN SETELAH DI AMBIL, DATA DIMASUKKAN KEDALAM MODEL, SETELAH ITU DITERUSKAN KEPADA ACTIVITY POST, SEHINGGA ACTIVITY DAPAT MENAMPILKAN DATA POST
+    /// CONTOH KELAS Gallery VIEW MODEL MENGAMBIL DATA DARI COLLECTION "gallery", KEMUDIAN SETELAH DI AMBIL, DATA DIMASUKKAN KEDALAM MODEL, SETELAH ITU DITERUSKAN KEPADA ACTIVITY POST, SEHINGGA ACTIVITY DAPAT MENAMPILKAN DATA GALLERY
 
-    private final MutableLiveData<ArrayList<PostModel>> listPost = new MutableLiveData<>();
-    final ArrayList<PostModel> postModelArrayList = new ArrayList<>();
+    private final MutableLiveData<ArrayList<GalleryModel>> listGallery = new MutableLiveData<>();
+    final ArrayList<GalleryModel> galleryModelArrayList = new ArrayList<>();
 
-    private static final String TAG = PostViewModel.class.getSimpleName();
+    private static final String TAG = GalleryViewModel.class.getSimpleName();
 
-    public void setListPost() {
-        postModelArrayList.clear();
+    public void setListGallery() {
+        galleryModelArrayList.clear();
 
         try {
             FirebaseFirestore
                     .getInstance()
-                    .collection("post")
+                    .collection("gallery")
                     .get()
                     .addOnCompleteListener(task -> {
                         if(task.isSuccessful()) {
                             for(QueryDocumentSnapshot document : task.getResult()) {
-                                PostModel model = new PostModel();
+                                GalleryModel model = new GalleryModel();
 
                                 model.setCaption("" + document.get("caption"));
                                 model.setDate("" + document.get("date"));
-                                model.setDp("" + document.get("dp"));
                                 model.setImage("" + document.get("image"));
                                 model.setLike("" + document.get("like"));
-                                model.setName("" + document.get("name"));
-                                model.setPostId("" + document.get("postId"));
-                                model.setUserId("" + document.get("userId"));
+                                model.setGalleryId("" + document.get("galleryId"));
+                                model.setAdminId("" + document.get("adminId"));
 
-                                postModelArrayList.add(model);
+                                galleryModelArrayList.add(model);
                             }
-                            listPost.postValue(postModelArrayList);
+                            listGallery.postValue(galleryModelArrayList);
                         } else {
                             Log.e(TAG, task.toString());
                         }
@@ -55,8 +52,8 @@ public class PostViewModel extends ViewModel {
         }
     }
 
-    public LiveData<ArrayList<PostModel>> getPostList() {
-        return listPost;
+    public LiveData<ArrayList<GalleryModel>> getListGallery() {
+        return listGallery;
     }
 
 }

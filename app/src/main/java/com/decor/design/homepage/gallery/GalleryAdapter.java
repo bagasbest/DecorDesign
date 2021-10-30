@@ -1,9 +1,8 @@
-package com.decor.design.homepage.post;
+package com.decor.design.homepage.gallery;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,70 +18,65 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
+public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
 
-    private final ArrayList<PostModel> postList = new ArrayList<>();
+
+    private final ArrayList<GalleryModel> listGallery = new ArrayList<>();
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(ArrayList<PostModel> items) {
-        postList.clear();
-        postList.addAll(items);
+    public void setData(ArrayList<GalleryModel> items) {
+        listGallery.clear();
+        listGallery.addAll(items);
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(postList.get(position));
+        holder.bind(listGallery.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return postList.size();
+        return listGallery.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView dp, image, loveClick;
-        TextView name, caption, like, date;
+        ImageView image, loveClick;
+        TextView like, date, caption;
         boolean isLike = false;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            dp = itemView.findViewById(R.id.dp);
             image = itemView.findViewById(R.id.roundedImageView);
-            name = itemView.findViewById(R.id.name);
-            caption = itemView.findViewById(R.id.caption);
+            loveClick = itemView.findViewById(R.id.like);
             like = itemView.findViewById(R.id.textView5);
             date = itemView.findViewById(R.id.date);
-            loveClick = itemView.findViewById(R.id.like);
+            caption = itemView.findViewById(R.id.caption);
+
         }
 
         @SuppressLint("SetTextI18n")
-        public void bind(PostModel model) {
+        public void bind(GalleryModel model) {
             String myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             SharedPreferences sharedPreferences = itemView.getContext().getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE);
-            boolean wasLike = sharedPreferences.getBoolean(myUid+model.getUserId(), false);
+            boolean wasLike = sharedPreferences.getBoolean(myUid+model.getAdminId(), false);
 
             Glide.with(itemView.getContext())
                     .load(model.getImage())
                     .into(image);
 
-            if(!model.getDp().equals("null")) {
-                Glide.with(itemView.getContext())
-                        .load(model.getDp())
-                        .into(dp);
-            }
-
-            name.setText(model.getName());
-            caption.setText(model.getCaption());
             like.setText(model.getLike() + " Likes");
             date.setText(model.getDate());
+            caption.setText(model.getCaption());
+
 
             if(wasLike) {
                 loveClick.setImageResource(R.drawable.ic_baseline_favorite_24);
@@ -93,24 +86,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 isLike = false;
             }
 
-            name.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String []options = {"Chat Designer"};
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
-                    builder.setTitle("Pilihan");
-                    builder.setItems(options, (dialog, which) -> {
-                        if(which == 0) {
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.create().show();
-                }
-            });
-
-
-
             loveClick.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -118,17 +93,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
                     if(isLike) {
                         loveClick.setImageResource(R.drawable.ic_baseline_favorite_border_24);
-                        editor.putBoolean(myUid+model.getUserId(), false);
+                        editor.putBoolean(myUid+model.getAdminId(), false);
                         isLike = false;
                     } else {
                         loveClick.setImageResource(R.drawable.ic_baseline_favorite_24);
-                        editor.putBoolean(myUid+model.getUserId(), true);
+                        editor.putBoolean(myUid+model.getAdminId(), true);
                         isLike = true;
-
                     }
                     editor.apply();
                 }
             });
+
+
 
         }
     }
