@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DecorDesign">
         <activity
+            android:name=".homepage.profile.ProfileEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".homepage.gallery.GalleryAddActivity"
             android:exported="false" />
         <activity

@@ -124,6 +124,13 @@ public class RegisterActivity extends AppCompatActivity {
                         register.put("phone", "not set");
                         register.put("dp", "");
                         register.put("username", "not set");
+                        /// for designer only
+                        register.put("background", "");
+                        register.put("work", "");
+                        register.put("skill", "");
+                        register.put("softSkill", "");
+                        register.put("organization", "");
+                        register.put("hobby", "");
 
                         FirebaseFirestore
                                 .getInstance()
