@@ -55,8 +55,44 @@ public class PostViewModel extends ViewModel {
         }
     }
 
+    public void setListPostByUid(String uid) {
+        postModelArrayList.clear();
+
+        try {
+            FirebaseFirestore
+                    .getInstance()
+                    .collection("post")
+                    .whereEqualTo("userId", uid)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            for(QueryDocumentSnapshot document : task.getResult()) {
+                                PostModel model = new PostModel();
+
+                                model.setCaption("" + document.get("caption"));
+                                model.setDate("" + document.get("date"));
+                                model.setDp("" + document.get("dp"));
+                                model.setImage("" + document.get("image"));
+                                model.setLike("" + document.get("like"));
+                                model.setName("" + document.get("name"));
+                                model.setPostId("" + document.get("postId"));
+                                model.setUserId("" + document.get("userId"));
+
+                                postModelArrayList.add(model);
+                            }
+                            listPost.postValue(postModelArrayList);
+                        } else {
+                            Log.e(TAG, task.toString());
+                        }
+                    });
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+    }
+
     public LiveData<ArrayList<PostModel>> getPostList() {
         return listPost;
     }
+
 
 }

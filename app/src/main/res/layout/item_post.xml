@@ -26,6 +26,7 @@
         android:textColor="@color/background"
         android:textSize="16sp"
         android:layout_marginEnd="16dp"
+        android:padding="10dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +36,7 @@
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/roundedImageView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="350dp"
         android:scaleType="centerCrop"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"

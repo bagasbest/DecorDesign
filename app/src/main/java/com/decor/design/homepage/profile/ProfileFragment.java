@@ -21,13 +21,17 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.decor.design.R;
 import com.decor.design.databinding.FragmentProfileBinding;
+import com.decor.design.homepage.search.show_all_post_designer.ShowAllPostActivity;
 import com.decor.design.login.LoginActivity;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -38,7 +42,14 @@ public class ProfileFragment extends Fragment {
     private String dp;
     private static final int REQUEST_FROM_GALLERY = 1001;
     private String role;
-    private ProfileModel model;
+    private ProfileModel model = new ProfileModel();
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //check role untuk memeriksa apakah user role = admin, customer, atau designer
+        checkRole();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -48,9 +59,6 @@ public class ProfileFragment extends Fragment {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        //check role untuk memeriksa apakah user role = admin, customer, atau designer
-        checkRole();
-
         return binding.getRoot();
     }
 
@@ -59,7 +67,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         /// update profile
-        binding.dp.setOnClickListener(new View.OnClickListener() {
+        binding.imageHint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ImagePicker.with(ProfileFragment.this)
@@ -77,6 +85,7 @@ public class ProfileFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), ProfileEditActivity.class);
                 intent.putExtra(ProfileEditActivity.ROLE, role);
                 intent.putExtra(ProfileEditActivity.EXTRA_PROFILE, model);
+                startActivity(intent);
             }
         });
 
@@ -89,7 +98,7 @@ public class ProfileFragment extends Fragment {
                         .setTitle("Confirm Logout")
                         .setMessage("Are you sure want to logout ?")
                         .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setPositiveButton("YA", (dialogInterface, i) -> {
+                        .setPositiveButton("YES", (dialogInterface, i) -> {
                             // sign out dari firebase autentikasi
                             FirebaseAuth.getInstance().signOut();
 
@@ -100,10 +109,20 @@ public class ProfileFragment extends Fragment {
                             startActivity(intent);
                             getActivity().finish();
                         })
-                        .setNegativeButton("TIDAK", (dialog, i) -> {
+                        .setNegativeButton("NO", (dialog, i) -> {
                             dialog.dismiss();
                         })
                         .show();
+            }
+        });
+
+        /// show all designer post
+        binding.showAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ShowAllPostActivity.class);
+                intent.putExtra(ShowAllPostActivity.UID, user.getUid());
+                startActivity(intent);
             }
         });
     }
@@ -120,8 +139,13 @@ public class ProfileFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         role = "" + documentSnapshot.get("role");
+                        String dp = "" + documentSnapshot.get("dp");
+                        if(!dp.equals("")) {
+                            Glide.with(requireContext())
+                                    .load(dp)
+                                    .into(binding.dp);
+                        }
 
-                        ProfileModel model = new ProfileModel();
                         model.setName("" + documentSnapshot.get("name"));
                         model.setUsername("" + documentSnapshot.get("username"));
                         model.setBackground("" + documentSnapshot.get("background"));
@@ -133,12 +157,8 @@ public class ProfileFragment extends Fragment {
                         model.setWork("" + documentSnapshot.get("work"));
                         model.setEducation("" + documentSnapshot.get("education"));
 
-
-
                         /// fetch data from database by role
-                        if(role.equals("admin")) {
-
-                        } else if (role.equals("customer")) {
+                        if (role.equals("customer") || role.equals("admin")) {
                             /// fetch user data
                             binding.fullName.setText(model.getName());
                             binding.username.setText(model.getUsername());
@@ -148,6 +168,7 @@ public class ProfileFragment extends Fragment {
                             binding.email.setText("" + documentSnapshot.get("email"));
                         } else {
                             binding.designerForm.setVisibility(View.VISIBLE);
+                            binding.textInputLayout6.setVisibility(View.VISIBLE);
                             binding.fullName.setText(model.getName());
                             binding.username.setText(model.getUsername());
                             binding.background.setText(model.getBackground());
@@ -164,7 +185,7 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-    /// fungsi untuk memvalidasi kode berdasarkan inisiasi variabel di atas tadi
+    /// fungsi untuk memvalidasi kode berdasarkan inisiasi variabel upload gambar dari gallery
     @SuppressLint("SetTextI18n")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -198,6 +219,13 @@ public class ProfileFragment extends Fragment {
                                             .with(this)
                                             .load(dp)
                                             .into(binding.dp);
+                                    updateUserDp();
+                                    if(role.equals("designer")) {
+                                        setDpForDesignerPost();
+                                        setDpForChat("designerId", "designerDp");
+                                    } else {
+                                        setDpForChat("customerId", "customerDp");
+                                    }
                                 })
                                 .addOnFailureListener(e -> {
                                     mProgressDialog.dismiss();
@@ -208,6 +236,60 @@ public class ProfileFragment extends Fragment {
                     mProgressDialog.dismiss();
                     Toast.makeText(getActivity(), "Failure to upload image", Toast.LENGTH_SHORT).show();
                     Log.d("imageDp: ", e.toString());
+                });
+    }
+
+    private void setDpForChat(String roleId, String roleDp) {
+        FirebaseFirestore
+                .getInstance()
+                .collection("chat")
+                .whereEqualTo(roleId, user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        for (DocumentSnapshot document : task.getResult()) {
+                            String chatId = "" + document.get("chatId");
+                            FirebaseFirestore
+                                    .getInstance()
+                                    .collection("chat")
+                                    .document(chatId)
+                                    .update(roleDp, dp);
+                        }
+
+                    }
+                });
+    }
+
+    private void updateUserDp() {
+        FirebaseFirestore
+                .getInstance()
+                .collection("users")
+                .document(user.getUid())
+                .update("dp", dp);
+    }
+
+    /// fungsi untuk mengupdate avatar pada designer post
+    private void setDpForDesignerPost() {
+        FirebaseFirestore
+                .getInstance()
+                .collection("post")
+                .whereEqualTo("userId", user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        for (DocumentSnapshot document : task.getResult()) {
+                            String postId = "" + document.get("postId");
+                            FirebaseFirestore
+                                    .getInstance()
+                                    .collection("post")
+                                    .document(postId)
+                                    .update("dp", dp);
+                        }
+                    }
                 });
     }
 

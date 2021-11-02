@@ -1,6 +1,7 @@
 package com.decor.design.homepage.search;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +73,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Intent intent = new Intent(itemView.getContext(), SearchDetailActivity.class);
+                    intent.putExtra(SearchDetailActivity.EXTRA_SEARCH, model);
+                    itemView.getContext().startActivity(intent);
                 }
             });
         }

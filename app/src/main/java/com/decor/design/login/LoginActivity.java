@@ -55,9 +55,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void autoLogin() {
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-            startActivity(new Intent(this, HomepageActivity.class));
-            finish();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
+                /// jika pernah login sebelumnya & email sudah di verifikasi, maka bisa login
+                startActivity(new Intent(this, HomepageActivity.class));
+                finish();
+            } else {
+                /// jika belum memverifikasi email, maka harus verifikasi terlebih dahulu
+                showUnverifyDialog();
+            }
         }
     }
 
@@ -79,12 +85,17 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        /// cek apakah email user udah di verifikasi atau belum
                         if(task.isSuccessful()) {
-                            binding.progressBar.setVisibility(View.GONE);
+                            if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
+                                binding.progressBar.setVisibility(View.GONE);
 
-                            startActivity(new Intent(LoginActivity.this, HomepageActivity.class));
-                            finish();
-
+                                startActivity(new Intent(LoginActivity.this, HomepageActivity.class));
+                                finish();
+                            } else {
+                                binding.progressBar.setVisibility(View.GONE);
+                                showUnverifyDialog();
+                            }
                         } else {
                             binding.progressBar.setVisibility(View.GONE);
                             showFailureDialog();
@@ -96,11 +107,34 @@ public class LoginActivity extends AppCompatActivity {
     /// jika gagal login, munculkan alert dialog gagal
     private void showFailureDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Gagal login")
-                .setMessage("Terdapat kesalahan ketika login, silahkan periksa koneksi internet anda, dan coba lagi nanti")
+                .setTitle("Failure login")
+                .setMessage("There something wrong with your email/password or your connection still trouble, please try again later")
                 .setIcon(R.drawable.ic_baseline_clear_24)
-                .setPositiveButton("OKE", (dialogInterface, i) -> {
+                .setPositiveButton("OK", (dialogInterface, i) -> {
                     dialogInterface.dismiss();
+                })
+                .show();
+    }
+
+    /// jika email belum di verifikasi, maka muncul dialog box
+    private void showUnverifyDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Failure login")
+                .setMessage("Your account not verified, please check your Gmail and verified account")
+                .setIcon(R.drawable.ic_baseline_clear_24)
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("Send verification", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                    FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this, "Success to send verification, Please check your Gmail and verify your account", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 })
                 .show();
     }

@@ -6,25 +6,36 @@
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/bg_border.xml" value="0.12407407407407407" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/bg_border2.xml" value="0.225" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/bg_edit_profile.xml" value="0.1638888888888889" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/bg_receiver.xml" value="0.23333333333333334" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/bg_rounded.xml" value="0.2526041666666667" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/bg_sender.xml" value="0.23333333333333334" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/ic_baseline_check_circle_outline_24.xml" value="0.2212962962962963" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/ic_baseline_date_range_24.xml" value="0.1638888888888889" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.1638888888888889" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/ic_baseline_local_phone_24.xml" value="0.24871794871794872" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/drawable/ic_baseline_warning_24.xml" value="0.2212962962962963" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_edit.xml" value="0.22871376811594202" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_gallery_add.xml" value="0.19972826086956522" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_gallery_detail.xml" value="0.2" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_gallery_edit_profile_admin.xml" value="0.22418478260869565" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_homepage.xml" value="0.176" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_login.xml" value="0.136" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_message_list.xml" value="0.2" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_post_add.xml" value="0.2" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_profile_edit.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_register.xml" value="0.2" />
-        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_chat.xml" value="0.16304347826086957" />
-        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_gallery.xml" value="0.2874806800618238" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_search_detail.xml" value="0.22418478260869565" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/activity_show_all.xml" value="0.22418478260869565" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_chat.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_gallery.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_post.xml" value="0.152" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_profile.xml" value="0.264" />
-        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_search.xml" value="0.4" />
-        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/item_gallery.xml" value="0.19972826086956522" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/fragment_search.xml" value="0.2" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/item_chat_left.xml" value="0.536" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/item_chat_right.xml" value="0.22871376811594202" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/item_gallery.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/item_message.xml" value="0.4" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/item_post.xml" value="0.2135593220338983" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/layout/item_search.xml" value="0.2" />
         <entry key="..\:/TUBES_GALERI/DecorDesign/app/src/main/res/menu/bottom_nav_menu.xml" value="0.23645833333333333" />

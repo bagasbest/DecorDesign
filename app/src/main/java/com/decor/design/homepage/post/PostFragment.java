@@ -24,12 +24,13 @@ public class PostFragment extends Fragment {
     private FragmentPostBinding binding;
     private PostAdapter adapter;
     private FirebaseUser user;
+    private String role;
 
     @Override
     public void onResume() {
         super.onResume();
-        initRecylerView();
-        initViewModel();
+        /// check role if role == designer, then show icon add +
+        checkRole();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -37,9 +38,6 @@ public class PostFragment extends Fragment {
 
         binding = FragmentPostBinding.inflate(inflater, container, false);
         user = FirebaseAuth.getInstance().getCurrentUser();
-
-        /// check role if role == designer, then show icon add +
-        checkRole();
 
         return binding.getRoot();
     }
@@ -66,7 +64,10 @@ public class PostFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(("" + documentSnapshot.get("role")).equals("designer")) {
+                        role = "" + documentSnapshot.get("role");
+                        initRecylerView();
+                        initViewModel();
+                        if(role.equals("designer")) {
                             binding.fabAdd.setVisibility(View.VISIBLE);
                         }
                     }
@@ -76,7 +77,7 @@ public class PostFragment extends Fragment {
     // FUNGSI UNTUK MENAMPILKAN LIST DATA POST
     private void initRecylerView() {
         binding.postRv.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PostAdapter();
+        adapter = new PostAdapter(role);
         binding.postRv.setAdapter(adapter);
     }
 

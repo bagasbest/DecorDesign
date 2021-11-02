@@ -1,4 +1,4 @@
-package com.decor.design.homepage.post.upload_post;
+package com.decor.design.homepage.post.edit_post;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -16,13 +16,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.decor.design.R;
-import com.decor.design.databinding.ActivityPostAddBinding;
+import com.decor.design.databinding.ActivityEditBinding;
+import com.decor.design.homepage.post.PostModel;
+import com.decor.design.homepage.post.upload_post.PostAddActivity;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,18 +34,27 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class PostAddActivity extends AppCompatActivity {
+public class EditActivity extends AppCompatActivity {
 
-    private ActivityPostAddBinding binding;
+    public static final String EXTRA_POST = "post";
+    private ActivityEditBinding binding;
     private String dp;
     private static final int REQUEST_FROM_GALLERY = 1001;
-
+    private PostModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityPostAddBinding.inflate(getLayoutInflater());
+        binding = ActivityEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        model = getIntent().getParcelableExtra(EXTRA_POST);
+
+        Glide.with(this)
+                .load(model.getImage())
+                .into(binding.image);
+
+        binding.caption.setText(model.getCaption());
 
         /// kembali
         binding.backButton.setOnClickListener(new View.OnClickListener() {
@@ -57,11 +65,11 @@ public class PostAddActivity extends AppCompatActivity {
         });
 
 
-        // upload post
+        // update post
         binding.saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadPost();
+                updatePost();
             }
         });
 
@@ -69,7 +77,7 @@ public class PostAddActivity extends AppCompatActivity {
         binding.hint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImagePicker.with(PostAddActivity.this)
+                ImagePicker.with(EditActivity.this)
                         .galleryOnly()
                         .compress(1024)
                         .start(REQUEST_FROM_GALLERY);
@@ -80,23 +88,15 @@ public class PostAddActivity extends AppCompatActivity {
     }
 
 
-    /// ini fungsi yang bekerja ketika tombol upload di klik, sistem akan melakukan storing data inputan ke database
-    private void uploadPost() {
-
+    /// ini fungsi yang bekerja ketika tombol update di klik, sistem akan melakukan storing data inputan ke database
+    private void updatePost() {
         String caption = binding.caption.getText().toString().trim();
 
-
-
         /// ini merpakan validasi kolom inputan, semua kolom wajib diisi
-        if(caption.isEmpty()) {
-            Toast.makeText(PostAddActivity.this, "Caption must be filled", Toast.LENGTH_SHORT).show();
+        if (caption.isEmpty()) {
+            Toast.makeText(EditActivity.this, "Caption must be filled", Toast.LENGTH_SHORT).show();
             return;
         }
-        else if(dp == null) {
-            Toast.makeText(PostAddActivity.this, "Image Design must be uploaded", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
 
         binding.progressBar.setVisibility(View.VISIBLE);
         String uid = String.valueOf(System.currentTimeMillis());
@@ -106,49 +106,29 @@ public class PostAddActivity extends AppCompatActivity {
         String date = sdf.format(new Date(Long.parseLong(uid)));
 
 
-        /// get name, and user avatar
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // SIMPAN DATA PERALATAN KAMERA KE DATABASE
+        Map<String, Object> product = new HashMap<>();
+        if (dp != null) {
+            product.put("image", dp);
+        }
+        product.put("caption", caption);
+        product.put("date", date);
+
         FirebaseFirestore
                 .getInstance()
-                .collection("users")
-                .document(userId)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .collection("post")
+                .document(model.getPostId())
+                .update(product)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                        String name = "" + documentSnapshot.get("name");
-                        String avatar = "" + documentSnapshot.get("avatar");
-
-                        // SIMPAN DATA PERALATAN KAMERA KE DATABASE
-                        Map<String, Object> product = new HashMap<>();
-                        product.put("caption", caption);
-                        product.put("image", dp);
-                        product.put("date", date);
-                        product.put("postId", uid);
-                        product.put("like", "0");
-                        product.put("userId", userId);
-                        product.put("name", name);
-                        product.put("dp", avatar);
-
-                        FirebaseFirestore
-                                .getInstance()
-                                .collection("post")
-                                .document(uid)
-                                .set(product)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull @NotNull Task<Void> task) {
-                                        if(task.isSuccessful()) {
-                                            binding.progressBar.setVisibility(View.GONE);
-                                            showSuccessDialog();
-                                        }
-                                        else {
-                                            binding.progressBar.setVisibility(View.GONE);
-                                            showFailureDialog();
-                                        }
-                                    }
-                                });
+                    public void onComplete(@NonNull @NotNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            binding.progressBar.setVisibility(View.GONE);
+                            showSuccessDialog();
+                        } else {
+                            binding.progressBar.setVisibility(View.GONE);
+                            showFailureDialog();
+                        }
                     }
                 });
     }
@@ -156,7 +136,7 @@ public class PostAddActivity extends AppCompatActivity {
     /// tampilkan dialog box ketika gagal mengupload
     private void showFailureDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Failure to upload new post")
+                .setTitle("Failure to update this post")
                 .setMessage("There something wrong in your connection, please try again later")
                 .setIcon(R.drawable.ic_baseline_clear_24)
                 .setPositiveButton("OKE", (dialogInterface, i) -> {
@@ -168,8 +148,8 @@ public class PostAddActivity extends AppCompatActivity {
     /// tampilkan dialog box ketika sukses mengupload
     private void showSuccessDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Success to upload new post")
-                .setMessage("Your post will be arise soon, please check post navigation for update")
+                .setTitle("Success to update this post")
+                .setMessage("Operation Success")
                 .setIcon(R.drawable.ic_baseline_check_circle_outline_24)
                 .setPositiveButton("OKE", (dialogInterface, i) -> {
                     dialogInterface.dismiss();
@@ -214,12 +194,12 @@ public class PostAddActivity extends AppCompatActivity {
                                 })
                                 .addOnFailureListener(e -> {
                                     mProgressDialog.dismiss();
-                                    Toast.makeText(PostAddActivity.this, "Failure to upload image", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(EditActivity.this, "Failure to upload image", Toast.LENGTH_SHORT).show();
                                     Log.d("imageDp: ", e.toString());
                                 }))
                 .addOnFailureListener(e -> {
                     mProgressDialog.dismiss();
-                    Toast.makeText(PostAddActivity.this, "Failure to upload image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditActivity.this, "Failure to upload image", Toast.LENGTH_SHORT).show();
                     Log.d("imageDp: ", e.toString());
                 });
     }

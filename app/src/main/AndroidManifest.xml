@@ -12,6 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DecorDesign">
         <activity
+            android:name=".homepage.gallery.GalleryDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".homepage.gallery.GalleryEditProfileAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".homepage.search.show_all_post_designer.ShowAllPostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".homepage.search.SearchDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".homepage.chat.message_list.MessageListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".homepage.post.edit_post.EditActivity"
+            android:exported="false" />
+        <activity
             android:name=".homepage.profile.ProfileEditActivity"
             android:exported="false" />
         <activity

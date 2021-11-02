@@ -13,7 +13,9 @@ import com.decor.design.databinding.ActivityProfileEditBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +36,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         if(getIntent().getStringExtra(ROLE).equals("designer")) {
 
-            binding.background.setVisibility(View.VISIBLE);
+            binding.textInputLayout7.setVisibility(View.VISIBLE);
             binding.designerForm.setVisibility(View.VISIBLE);
 
             binding.background.setText(model.getBackground());
@@ -60,6 +62,14 @@ public class ProfileEditActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 formValidation();
+            }
+        });
+
+        /// kembali ke halaman profil
+        binding.backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
 
@@ -122,12 +132,14 @@ public class ProfileEditActivity extends AppCompatActivity {
             user.put("username", username);
             user.put("phone", phone);
             user.put("background", background);
-            user.put("education", phone);
-            user.put("hobby", phone);
-            user.put("organization", phone);
-            user.put("work", phone);
-            user.put("skill", phone);
-            user.put("softSkill", phone);
+            user.put("education", education);
+            user.put("hobby", hobby);
+            user.put("organization", organization);
+            user.put("work", work);
+            user.put("skill", skill);
+            user.put("softSkill", softSkill);
+
+            updateDesignerNameInPostList(userId, name);
 
             FirebaseFirestore
                     .getInstance()
@@ -192,6 +204,28 @@ public class ProfileEditActivity extends AppCompatActivity {
                     });
         }
 
+    }
+
+    private void updateDesignerNameInPostList(String userId, String name) {
+            FirebaseFirestore
+                    .getInstance()
+                    .collection("post")
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                String postId = "" + document.get("postId");
+                                FirebaseFirestore
+                                        .getInstance()
+                                        .collection("post")
+                                        .document(postId)
+                                        .update("name", name);
+                            }
+                        }
+                    });
     }
 
 

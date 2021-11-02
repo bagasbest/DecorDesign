@@ -1,6 +1,9 @@
 package com.decor.design.homepage.gallery;
 
-public class GalleryModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class GalleryModel implements Parcelable {
 
     private String caption;
     private String image;
@@ -10,6 +13,42 @@ public class GalleryModel {
     private String adminId;
 
     public GalleryModel() {}
+
+    protected GalleryModel(Parcel in) {
+        caption = in.readString();
+        image = in.readString();
+        date = in.readString();
+        galleryId = in.readString();
+        like = in.readString();
+        adminId = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(caption);
+        dest.writeString(image);
+        dest.writeString(date);
+        dest.writeString(galleryId);
+        dest.writeString(like);
+        dest.writeString(adminId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<GalleryModel> CREATOR = new Creator<GalleryModel>() {
+        @Override
+        public GalleryModel createFromParcel(Parcel in) {
+            return new GalleryModel(in);
+        }
+
+        @Override
+        public GalleryModel[] newArray(int size) {
+            return new GalleryModel[size];
+        }
+    };
 
     public String getCaption() {
         return caption;

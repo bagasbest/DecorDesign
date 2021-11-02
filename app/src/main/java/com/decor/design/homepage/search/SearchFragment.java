@@ -24,6 +24,8 @@ public class SearchFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentSearchBinding.inflate(inflater, container, false);
+        initRecylerView();
+        initViewModel("all");
         return binding.getRoot();
     }
 
@@ -68,8 +70,12 @@ public class SearchFragment extends Fragment {
         SearchViewModel viewModel = new ViewModelProvider(this).get(SearchViewModel.class);
 
         binding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.setListDesigner(query);
-        viewModel.getDesignerList().observe(this, listData -> {
+        if(query.equals("all")) {
+            viewModel.setListDesignerAll();
+        } else {
+            viewModel.setListDesigner(query);
+        }
+        viewModel.getDesignerList().observe(getViewLifecycleOwner(), listData -> {
             if (listData.size() > 0) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.noData.setVisibility(View.GONE);

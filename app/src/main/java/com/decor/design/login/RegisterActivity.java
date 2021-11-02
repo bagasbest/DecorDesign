@@ -1,5 +1,6 @@
 package com.decor.design.login;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +11,8 @@ import android.widget.Toast;
 
 import com.decor.design.R;
 import com.decor.design.databinding.ActivityRegisterBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -85,67 +88,81 @@ public class RegisterActivity extends AppCompatActivity {
         int selectId = binding.radioGroup2.getCheckedRadioButtonId();
         RadioButton radioButton = findViewById(selectId);
 
-        if(name.isEmpty()) {
+        if (name.isEmpty()) {
             Toast.makeText(RegisterActivity.this, "Full Name must be filled", Toast.LENGTH_SHORT).show();
             return;
-        }
-        else if(dob.equals("Date of Birth")) {
+        } else if (dob.equals("Date of Birth")) {
             Toast.makeText(RegisterActivity.this, "Date of Birth must be filled", Toast.LENGTH_SHORT).show();
             return;
-        }
-        else if(email.isEmpty()) {
+        } else if (email.isEmpty()) {
             Toast.makeText(RegisterActivity.this, "Email must be filled", Toast.LENGTH_SHORT).show();
             return;
-        }
-        else if(password.isEmpty()) {
+        } else if (password.isEmpty()) {
             Toast.makeText(RegisterActivity.this, "Password must be filled", Toast.LENGTH_SHORT).show();
             return;
-        }
-        else if (radioButton == null) {
+        } else if (radioButton == null) {
             Toast.makeText(RegisterActivity.this, "Gender must be filled", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // simpan biodata kedalam database
         binding.progressBar.setVisibility(View.VISIBLE);
+        /// create account
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
-                        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    if (task.isSuccessful()) {
 
-                        Map<String, Object> register = new HashMap<>();
-                        register.put("name", name);
-                        register.put("nameTemp", name.toLowerCase());
-                        register.put("dob", dob);
-                        register.put("email", email);
-                        register.put("password", password);
-                        register.put("gender", radioButton.getText().toString());
-                        register.put("uid", uid);
-                        register.put("role", role);
-                        register.put("phone", "not set");
-                        register.put("dp", "");
-                        register.put("username", "not set");
-                        /// for designer only
-                        register.put("background", "");
-                        register.put("work", "");
-                        register.put("skill", "");
-                        register.put("softSkill", "");
-                        register.put("organization", "");
-                        register.put("hobby", "");
+                        //// send email verification
+                        FirebaseAuth.getInstance()
+                                .getCurrentUser()
+                                .sendEmailVerification()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            /// if operation complete then save user bio to database
 
-                        FirebaseFirestore
-                                .getInstance()
-                                .collection("users")
-                                .document(uid)
-                                .set(register)
-                                .addOnCompleteListener(task2 -> {
-                                    if(task2.isSuccessful()) {
-                                        binding.progressBar.setVisibility(View.GONE);
-                                        showSuccessDialog();
-                                    }
-                                    else {
-                                        binding.progressBar.setVisibility(View.GONE);
-                                        showFailureDialog();
+                                            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                                            Map<String, Object> register = new HashMap<>();
+                                            register.put("name", name);
+                                            register.put("nameTemp", name.toLowerCase());
+                                            register.put("dob", dob);
+                                            register.put("email", email);
+                                            register.put("password", password);
+                                            register.put("gender", radioButton.getText().toString());
+                                            register.put("uid", uid);
+                                            register.put("role", role);
+                                            register.put("phone", "not set");
+                                            register.put("dp", "");
+                                            register.put("username", "not set");
+                                            /// for designer only
+                                            register.put("background", "not set");
+                                            register.put("work", "not set");
+                                            register.put("skill", "not set");
+                                            register.put("softSkill", "not set");
+                                            register.put("organization", "not set");
+                                            register.put("hobby", "not set");
+                                            register.put("education", "not set");
+
+                                            FirebaseFirestore
+                                                    .getInstance()
+                                                    .collection("users")
+                                                    .document(uid)
+                                                    .set(register)
+                                                    .addOnCompleteListener(task2 -> {
+                                                        if (task2.isSuccessful()) {
+                                                            binding.progressBar.setVisibility(View.GONE);
+                                                            showSuccessDialog();
+                                                        } else {
+                                                            binding.progressBar.setVisibility(View.GONE);
+                                                            showFailureDialog();
+                                                        }
+                                                    });
+                                        } else {
+                                            binding.progressBar.setVisibility(View.GONE);
+                                            showFailureDialog();
+                                        }
                                     }
                                 });
                     } else {

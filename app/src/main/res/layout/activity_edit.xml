@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".homepage.gallery.GalleryAddActivity">
+    tools:context=".homepage.post.edit_post.EditActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add New Gallery"
+            android:text="Edit Post"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Upload Gallery Image"
+            android:text="Your Design"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view5" />
@@ -82,6 +82,7 @@
             android:id="@+id/hint"
             app:layout_constraintStart_toStartOf="@+id/image"
             app:layout_constraintTop_toTopOf="@+id/image" />
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout4"
@@ -123,7 +124,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="30dp"
             android:layout_marginEnd="16dp"
-            android:text="Upload to Gallery"
+            android:text="Update Post"
             android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

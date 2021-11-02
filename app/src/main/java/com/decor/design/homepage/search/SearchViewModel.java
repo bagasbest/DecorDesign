@@ -55,8 +55,41 @@ public class SearchViewModel extends ViewModel {
         }
     }
 
+    public void setListDesignerAll() {
+        designerArrayList.clear();
+
+        try {
+            FirebaseFirestore
+                    .getInstance()
+                    .collection("users")
+                    .whereEqualTo("role", "designer")
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            for(QueryDocumentSnapshot document : task.getResult()) {
+                                SearchModel model = new SearchModel();
+
+                                model.setDp("" + document.get("dp"));
+                                model.setName("" + document.get("name"));
+                                model.setBackground("" + document.get("background"));
+                                model.setUid("" + document.get("uid"));
+
+
+                                designerArrayList.add(model);
+                            }
+                            listDesigner.postValue(designerArrayList);
+                        } else {
+                            Log.e(TAG, task.toString());
+                        }
+                    });
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+    }
+
     public LiveData<ArrayList<SearchModel>> getDesignerList() {
         return listDesigner;
     }
+
 
 }
