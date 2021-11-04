@@ -52,7 +52,7 @@
         android:id="@+id/noData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Chat History"
+        android:text="Chat History not Available"
         android:textColor="@color/black"
         android:textSize="28sp"
         android:textStyle="bold"

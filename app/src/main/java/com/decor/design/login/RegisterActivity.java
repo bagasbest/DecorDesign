@@ -67,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void setDateOfBirth() {
         // choose DOB,
-        MaterialDatePicker datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Tanggal Lahir").build();
+        MaterialDatePicker datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Date of Birth").build();
         datePicker.show(getSupportFragmentManager(), datePicker.toString());
         datePicker.addOnPositiveButtonClickListener(selection -> {
 

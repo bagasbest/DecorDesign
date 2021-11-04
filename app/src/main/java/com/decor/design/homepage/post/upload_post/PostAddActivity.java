@@ -120,22 +120,26 @@ public class PostAddActivity extends AppCompatActivity {
                         String name = "" + documentSnapshot.get("name");
                         String avatar = "" + documentSnapshot.get("avatar");
 
-                        // SIMPAN DATA PERALATAN KAMERA KE DATABASE
-                        Map<String, Object> product = new HashMap<>();
-                        product.put("caption", caption);
-                        product.put("image", dp);
-                        product.put("date", date);
-                        product.put("postId", uid);
-                        product.put("like", "0");
-                        product.put("userId", userId);
-                        product.put("name", name);
-                        product.put("dp", avatar);
+                        // SIMPAN DATA POSTINGAN KE DATABASE
+                        Map<String, Object> post = new HashMap<>();
+                        post.put("caption", caption);
+                        post.put("image", dp);
+                        post.put("date", date);
+                        post.put("postId", uid);
+                        post.put("like", "0");
+                        post.put("userId", userId);
+                        post.put("name", name);
+                        if(avatar.equals("null")) {
+                            post.put("dp", "");
+                        } else {
+                            post.put("dp", avatar);
+                        }
 
                         FirebaseFirestore
                                 .getInstance()
                                 .collection("post")
                                 .document(uid)
-                                .set(product)
+                                .set(post)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull @NotNull Task<Void> task) {

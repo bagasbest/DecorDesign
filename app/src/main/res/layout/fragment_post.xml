@@ -50,7 +50,7 @@
         android:id="@+id/noData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nothing Post Available"
+        android:text="Post not Available"
         android:textColor="@color/black"
         android:textSize="28sp"
         android:visibility="gone"

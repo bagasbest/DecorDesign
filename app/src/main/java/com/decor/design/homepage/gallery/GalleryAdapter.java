@@ -20,6 +20,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
 
     private final ArrayList<GalleryModel> listGallery = new ArrayList<>();
+
     @SuppressLint("NotifyDataSetChanged")
     public void setData(ArrayList<GalleryModel> items) {
         listGallery.clear();

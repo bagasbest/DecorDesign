@@ -245,7 +245,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         private void createNewChatWithDesigner(PostModel model, String myUid) {
-            String timeInMillis = String.valueOf(System.currentTimeMillis());
             ProgressDialog mProgressDialog = new ProgressDialog(itemView.getContext());
 
             mProgressDialog.setMessage("Please wait until process finish...");
@@ -262,7 +261,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                             Map<String, Object> consultation = new HashMap<>();
-                            consultation.put("chatId", timeInMillis);
+                            consultation.put("chatId", myUid+model.getUserId());
                             consultation.put("designerId", model.getUserId());
                             consultation.put("customerId", myUid);
                             consultation.put("designerName", model.getName());
@@ -279,7 +278,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                             FirebaseFirestore
                                     .getInstance()
                                     .collection("chat")
-                                    .document(timeInMillis)
+                                    .document(myUid+model.getUserId())
                                     .set(consultation)
                                     .addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {

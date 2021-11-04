@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -15,16 +14,18 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.decor.design.R;
 import com.decor.design.databinding.ActivityGalleryDetailBinding;
-import com.decor.design.login.LoginActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class GalleryDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_GALLERY_ID = "galleryId";
     public static final String EXTRA_GALLERY = "gallery";
+    public static final String EXTRA_ROLE = "role";
     private ActivityGalleryDetailBinding binding;
     private final String myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private SharedPreferences sharedPreferences;
@@ -45,6 +46,8 @@ public class GalleryDetailActivity extends AppCompatActivity {
         boolean wasLike = sharedPreferences.getBoolean(myUid+galleryId, false);
         likes = sharedPreferences.getInt(galleryId, 0);
 
+        /// set role
+        getRole();
 
         /// set gallery
         Glide.with(this)
@@ -135,6 +138,23 @@ public class GalleryDetailActivity extends AppCompatActivity {
                         .show();
             }
         });
+    }
+
+    private void getRole() {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore
+                .getInstance()
+                .collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(("" + documentSnapshot.get("role")).equals("admin")) {
+                            binding.deleteGallery.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
     }
 
     @Override

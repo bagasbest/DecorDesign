@@ -114,7 +114,6 @@ public class GalleryFragment extends Fragment {
                         background = "" + documentSnapshot.get("background");
                         username = "" + documentSnapshot.get("username");
 
-
                         Glide.with(requireContext())
                                 .load(dp)
                                 .into(binding.dp);

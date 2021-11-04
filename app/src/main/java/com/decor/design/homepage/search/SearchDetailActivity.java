@@ -76,6 +76,7 @@ public class SearchDetailActivity extends AppCompatActivity {
         binding.chatDesigner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                binding.chatDesigner.setEnabled(false);
                 chatDesigner();
             }
         });
@@ -126,7 +127,6 @@ public class SearchDetailActivity extends AppCompatActivity {
     }
 
     private void chatDesigner() {
-        String timeInMillis = String.valueOf(System.currentTimeMillis());
         String myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ProgressDialog mProgressDialog = new ProgressDialog(this);
 
@@ -144,7 +144,7 @@ public class SearchDetailActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         Map<String, Object> consultation = new HashMap<>();
-                        consultation.put("chatId", timeInMillis);
+                        consultation.put("chatId", myUid+model.getUid());
                         consultation.put("designerId", model.getUid());
                         consultation.put("customerId", myUid);
                         consultation.put("designerName", model.getName());
@@ -157,7 +157,7 @@ public class SearchDetailActivity extends AppCompatActivity {
                         FirebaseFirestore
                                 .getInstance()
                                 .collection("chat")
-                                .document(timeInMillis)
+                                .document(myUid+model.getUid())
                                 .set(consultation)
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
@@ -167,6 +167,7 @@ public class SearchDetailActivity extends AppCompatActivity {
                                         mProgressDialog.dismiss();
                                         Log.e("Error Transaction", task.toString());
                                         Toast.makeText(SearchDetailActivity.this, "Failure to create new chat with designer", Toast.LENGTH_SHORT).show();
+                                        binding.chatDesigner.setEnabled(true);
                                     }
                                 });
 
@@ -182,6 +183,7 @@ public class SearchDetailActivity extends AppCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("OK", (dialogInterface, i) -> {
                     dialogInterface.dismiss();
+                    binding.chatDesigner.setEnabled(true);
                     Intent intent = new Intent(SearchDetailActivity.this, HomepageActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
