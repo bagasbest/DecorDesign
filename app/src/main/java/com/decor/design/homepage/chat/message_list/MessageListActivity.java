@@ -5,18 +5,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.decor.design.R;
 import com.decor.design.databinding.ActivityMessageListBinding;
-import com.decor.design.homepage.chat.ChatAdapter;
 import com.decor.design.homepage.chat.ChatModel;
-import com.decor.design.homepage.chat.ChatViewModel;
 import com.decor.design.homepage.chat.message_list.message_db.MessageDatabase;
+import com.decor.design.homepage.search.SearchDetailActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,6 +47,17 @@ public class MessageListActivity extends AppCompatActivity {
             }
             myUid = model.getCustomerId();
             otherId = model.getDesignerId();
+
+            binding.name.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MessageListActivity.this, SearchDetailActivity.class);
+                    intent.putExtra(SearchDetailActivity.EXTRA_SEARCH, otherId);
+                    intent.putExtra(SearchDetailActivity.EXTRA_OPTION, "chat");
+                    startActivity(intent);
+                }
+            });
+
         } else {
             binding.name.setText(model.getCustomerName());
             if (!model.getCustomerDp().equals("null")) {

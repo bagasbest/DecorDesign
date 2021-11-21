@@ -26,27 +26,19 @@ import java.util.Map;
 
 public class SearchDetailActivity extends AppCompatActivity {
 
-    public static final String EXTRA_SEARCH = "search";
+    public static final String EXTRA_SEARCH = "uid";
+    public static final String EXTRA_OPTION = "option";
     private ActivitySearchDetailBinding binding;
-    private SearchModel model;
-    private String role;
+    private String role, designerId;
+    private String designerName;
+    private String designerDp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySearchDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        model = getIntent().getParcelableExtra(EXTRA_SEARCH);
-
-
-        if(!model.getDp().equals("")) {
-            Glide.with(this)
-                    .load(model.getDp())
-                    .into(binding.dp);
-        }
-
-        binding.background.setText(model.getBackground());
-        binding.fullName.setText(model.getName());
+        designerId = getIntent().getStringExtra(EXTRA_SEARCH);
 
         /// check role, apakah saya merupakan customer atau bukan, untuk keperluan chat designer
         checkRole();
@@ -67,7 +59,7 @@ public class SearchDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SearchDetailActivity.this, ShowAllPostActivity.class);
-                intent.putExtra(ShowAllPostActivity.UID, model.getUid());
+                intent.putExtra(ShowAllPostActivity.UID, designerId);
                 startActivity(intent);
             }
         });
@@ -82,16 +74,29 @@ public class SearchDetailActivity extends AppCompatActivity {
         });
     }
 
+
     private void setDetailDesignerField() {
         FirebaseFirestore
                 .getInstance()
                 .collection("users")
-                .document(model.getUid())
+                .document(getIntent().getStringExtra(EXTRA_SEARCH))
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        designerName = "" + documentSnapshot.get("name");
+                        designerDp = "" + documentSnapshot.get("dp");
+
+                        if(!("" + documentSnapshot.get("dp")).equals("")) {
+                            Glide.with(SearchDetailActivity.this)
+                                    .load("" + documentSnapshot.get("dp"))
+                                    .into(binding.dp);
+                        }
+
+                        binding.background.setText("" + documentSnapshot.get("background"));
+                        binding.fullName.setText(designerName);
                         binding.username.setText("" + documentSnapshot.get("username"));
                         binding.gender.setText("" + documentSnapshot.get("gender"));
                         binding.dob.setText("" + documentSnapshot.get("dob"));
@@ -119,7 +124,7 @@ public class SearchDetailActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         /// check role, apakah admin, customer, atau designer, untuk keperluan chat
                         role = "" + documentSnapshot.get("role");
-                        if(role.equals("customer")){
+                        if(role.equals("customer") && getIntent().getStringExtra(EXTRA_OPTION).equals("search")){
                             binding.chatDesigner.setVisibility(View.VISIBLE);
                         }
                     }
@@ -144,12 +149,16 @@ public class SearchDetailActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         Map<String, Object> consultation = new HashMap<>();
-                        consultation.put("chatId", myUid+model.getUid());
-                        consultation.put("designerId", model.getUid());
+                        consultation.put("chatId", myUid+designerId);
+                        consultation.put("designerId", designerId);
                         consultation.put("customerId", myUid);
-                        consultation.put("designerName", model.getName());
+                        consultation.put("designerName", designerName);
                         consultation.put("customerName", "" + documentSnapshot.get("name"));
-                        consultation.put("designerDp", model.getDp());
+                        if(designerDp.equals("")) {
+                            consultation.put("designerDp", "");
+                        } else {
+                            consultation.put("designerDp", designerDp);
+                        }
                         consultation.put("dateTime", "");
                         consultation.put("customerDp", "" + documentSnapshot.get("dp"));
                         consultation.put("lastMessage", "");
@@ -157,7 +166,7 @@ public class SearchDetailActivity extends AppCompatActivity {
                         FirebaseFirestore
                                 .getInstance()
                                 .collection("chat")
-                                .document(myUid+model.getUid())
+                                .document(myUid+designerId)
                                 .set(consultation)
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
